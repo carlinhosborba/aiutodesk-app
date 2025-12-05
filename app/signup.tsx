@@ -5,9 +5,11 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
+  TouchableOpacity,
 } from "react-native";
-import { TextInput, Button } from "react-native-paper";
 import { useRouter } from "expo-router";
+import { AppButton } from "@/components/ui/AppButton";
+import { AppInput } from "@/components/ui/AppInput";
 
 export default function SignupScreen() {
   const router = useRouter();
@@ -15,32 +17,32 @@ export default function SignupScreen() {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
-  const [confirmarSenha, setConfirmarSenha] = useState("");
+  const [confirmacao, setConfirmacao] = useState("");
   const [erro, setErro] = useState("");
 
   function handleSignup() {
     setErro("");
 
-    if (!nome || !email || !senha || !confirmarSenha) {
+    if (!nome || !email || !senha || !confirmacao) {
       setErro("Preencha todos os campos para continuar.");
       return;
     }
 
-    if (senha !== confirmarSenha) {
+    if (senha !== confirmacao) {
       setErro("As senhas não conferem.");
       return;
     }
 
-    // ✅ Por enquanto: fluxo simples
-    // Depois, aqui vai chamar a API real (Express) para criar usuário
-    // e só se der sucesso voltamos para o login.
+    // 👉 Por enquanto: cadastro FAKE
+    // Aqui no futuro entra a chamada para a API (Express)
     console.log("Usuário cadastrado (FAKE):", { nome, email });
 
-    // Volta para tela de login
+    // Depois de cadastrar, volta para o login
     router.replace("/login");
   }
 
-  function voltarParaLogin() {
+  function handleGoToLogin() {
+    setErro("");
     router.replace("/login");
   }
 
@@ -49,71 +51,50 @@ export default function SignupScreen() {
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <View style={styles.inner}>
+      <View style={styles.card}>
         <Text style={styles.title}>Criar conta</Text>
         <Text style={styles.subtitle}>
           Preencha os dados para se cadastrar no AIUTODESK
         </Text>
 
-        <TextInput
-          mode="outlined"
+        <AppInput
           label="Nome completo"
+          placeholder="Seu nome"
           value={nome}
           onChangeText={setNome}
-          style={styles.input}
-          outlineColor="#aaa"
-          activeOutlineColor="#7C3AED"
         />
 
-        <TextInput
-          mode="outlined"
+        <AppInput
           label="E-mail"
+          placeholder="seuemail@exemplo.com"
           value={email}
           onChangeText={setEmail}
           autoCapitalize="none"
           keyboardType="email-address"
-          style={styles.input}
-          outlineColor="#aaa"
-          activeOutlineColor="#7C3AED"
         />
 
-        <TextInput
-          mode="outlined"
+        <AppInput
           label="Senha"
+          placeholder="Crie uma senha"
           value={senha}
           onChangeText={setSenha}
           secureTextEntry
-          style={styles.input}
-          outlineColor="#aaa"
-          activeOutlineColor="#7C3AED"
         />
 
-        <TextInput
-          mode="outlined"
-          label="Confirmar senha"
-          value={confirmarSenha}
-          onChangeText={setConfirmarSenha}
+        <AppInput
+          label="Confirmação de senha"
+          placeholder="Repita a senha"
+          value={confirmacao}
+          onChangeText={setConfirmacao}
           secureTextEntry
-          style={styles.input}
-          outlineColor="#aaa"
-          activeOutlineColor="#7C3AED"
+          error={erro}
         />
 
-        {erro ? <Text style={styles.error}>{erro}</Text> : null}
+        <AppButton title="Cadastrar" onPress={handleSignup} />
 
-        <Button
-          mode="contained"
-          onPress={handleSignup}
-          style={{ marginTop: 16 }}
-          buttonColor="#7C3AED"
-          textColor="#fff"
-        >
-          Cadastrar
-        </Button>
-
-        <Text style={styles.link} onPress={voltarParaLogin}>
-          Já tenho conta — fazer login
-        </Text>
+        <TouchableOpacity onPress={handleGoToLogin}>
+          <Text style={styles.link}>Já tenho conta – fazer login</Text>
+        </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
   );
@@ -122,38 +103,37 @@ export default function SignupScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f2f2f2",
+    backgroundColor: "#F3F4F6",
     justifyContent: "center",
+    paddingHorizontal: 16,
   },
-  inner: {
+  card: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
     padding: 24,
+    shadowColor: "#000000",
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 3,
   },
   title: {
-    fontSize: 26,
-    fontWeight: "bold",
+    fontSize: 24,
+    fontWeight: "700",
     textAlign: "center",
-    marginBottom: 8,
+    marginBottom: 6,
   },
   subtitle: {
-    fontSize: 15,
+    fontSize: 14,
     textAlign: "center",
-    marginBottom: 24,
-    color: "#666",
-  },
-  input: {
-    marginBottom: 12,
-    backgroundColor: "white",
-  },
-  error: {
-    marginTop: 4,
-    color: "red",
-    textAlign: "center",
+    marginBottom: 20,
+    color: "#6B7280",
   },
   link: {
-    marginTop: 20,
+    marginTop: 16,
     textAlign: "center",
-    color: "#7C3AED",
-    fontSize: 16,
+    color: "#7B3AED",
+    fontSize: 15,
     fontWeight: "500",
   },
 });

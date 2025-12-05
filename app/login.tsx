@@ -5,10 +5,12 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
+  TouchableOpacity,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useAuth } from "@/store/auth";
-import { TextInput, Button } from "react-native-paper";
+import { AppButton } from "@/components/ui/AppButton";
+import { AppInput } from "@/components/ui/AppInput";
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -26,7 +28,6 @@ export default function LoginScreen() {
       return;
     }
 
-    // LOGIN FAKE POR ENQUANTO
     const fakeToken = "TOKEN_FAKE_AIUTODESK";
     const fakeUser = {
       nome: "Usuário AIUTODESK",
@@ -37,62 +38,43 @@ export default function LoginScreen() {
     router.replace("/(tabs)");
   }
 
+  function handleGoToSignup() {
+    setErro("");
+    router.push("/signup");
+  }
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <View style={styles.inner}>
+      <View style={styles.card}>
         <Text style={styles.title}>Bem-vindo ao AIUTODESK</Text>
         <Text style={styles.subtitle}>Faça login para continuar</Text>
 
-        {/* INPUT — EMAIL */}
-        <TextInput
-          mode="outlined"
+        <AppInput
           label="E-mail"
+          placeholder="seuemail@exemplo.com"
           value={email}
           onChangeText={setEmail}
           autoCapitalize="none"
           keyboardType="email-address"
-          style={styles.input}
-          outlineColor="#aaa"
-          activeOutlineColor="#7C3AED"
         />
 
-        {/* INPUT — SENHA */}
-        <TextInput
-          mode="outlined"
+        <AppInput
           label="Senha"
+          placeholder="Digite sua senha"
           value={senha}
           onChangeText={setSenha}
           secureTextEntry
-          style={styles.input}
-          outlineColor="#aaa"
-          activeOutlineColor="#7C3AED"
+          error={erro}
         />
 
-        {/* ERRO */}
-        {erro ? <Text style={styles.error}>{erro}</Text> : null}
+        <AppButton title="Entrar" onPress={handleLogin} />
 
-        {/* BOTÃO ENTRAR */}
-        <Button
-          mode="contained"
-          onPress={handleLogin}
-          style={{ marginTop: 16 }}
-          buttonColor="#7C3AED"
-          textColor="#fff"
-        >
-          Entrar
-        </Button>
-
-        <Text
-          style={styles.link}
-          onPress={() => {
-            router.push("/signup");
-          }}
-        >
-          Criar conta
-        </Text>
+        <TouchableOpacity onPress={handleGoToSignup}>
+          <Text style={styles.link}>Criar conta</Text>
+        </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
   );
@@ -101,38 +83,37 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f2f2f2",
+    backgroundColor: "#F3F4F6",
     justifyContent: "center",
+    paddingHorizontal: 16,
   },
-  inner: {
+  card: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
     padding: 24,
+    shadowColor: "#000000",
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 3,
   },
   title: {
-    fontSize: 28,
-    fontWeight: "bold",
+    fontSize: 24,
+    fontWeight: "700",
     textAlign: "center",
-    marginBottom: 8,
+    marginBottom: 6,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 14,
     textAlign: "center",
-    marginBottom: 24,
-    color: "#666",
-  },
-  input: {
-    marginBottom: 12,
-    backgroundColor: "white",
-  },
-  error: {
-    marginTop: 4,
-    color: "red",
-    textAlign: "center",
+    marginBottom: 20,
+    color: "#6B7280",
   },
   link: {
-    marginTop: 20,
+    marginTop: 16,
     textAlign: "center",
-    color: "#7C3AED",
-    fontSize: 16,
+    color: "#7B3AED",
+    fontSize: 15,
     fontWeight: "500",
   },
 });
