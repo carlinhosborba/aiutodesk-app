@@ -21,9 +21,9 @@ export default function CarlosBorbaScreen() {
           </Text>
 
           <Text style={styles.sectionTitle}>Contato</Text>
-          <Text style={styles.text}>📧 E-mail: (seu e-mail aqui)</Text>
-          <Text style={styles.text}>🐙 GitHub: (link do seu GitHub)</Text>
-          <Text style={styles.text}>💼 LinkedIn: (link do seu LinkedIn)</Text>
+          <Text style={styles.text}>📧 E-mail: carlinhos.borba@hotmail.com</Text>
+          <Text style={styles.text}>🐙 GitHub: https://github.com/carlinhosborba</Text>
+          <Text style={styles.text}>💼 LinkedIn: linkedin.com/in/carlos-borba-770b71169</Text>
         </Card.Content>
 
         <Card.Actions style={styles.actions}>
