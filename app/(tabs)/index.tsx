@@ -1,76 +1,72 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import React from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
 import { useRouter } from "expo-router";
 import { useAuth } from "@/store/auth";
 
 export default function HomeScreen() {
   const router = useRouter();
 
-  const token = useAuth((state) => state.token);
-  const user = useAuth((state) => state.user);
-  const logout = useAuth((state) => state.logout);
+  // Pegamos o estado inteiro (sem chamar nada que atualize)
+  const auth = useAuth();
+  const isLoggedIn = !!auth.token;
 
   function handleLogout() {
-    logout();
-    router.replace("/login");
+    if (isLoggedIn) {
+      // limpa usuário/token no Zustand
+      auth.logout();
+      // volta para a tela de login
+      router.replace("/login");
+    }
+  }
+
+  function goToSobre() {
+    router.push("/sobre");
+  }
+
+  function goToEquipe() {
+    router.push("/equipe");
   }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Topo: estado de autenticação */}
-      <View style={styles.authBox}>
+      {/* Card de autenticação */}
+      <View style={styles.authCard}>
         <Text style={styles.authTitle}>Estado de autenticação (Zustand)</Text>
-        {token && user ? (
-          <Text style={styles.authText}>
-            Usuário logado:{" "}
-            <Text style={styles.authStrong}>{user.nome}</Text>
-            {"\n"}
-            <Text style={styles.authEmail}>{user.email}</Text>
-          </Text>
+
+        {isLoggedIn && auth.user ? (
+          <>
+            <Text style={styles.authText}>
+              Usuário logado:{" "}
+              <Text style={styles.authBold}>{auth.user.nome}</Text>
+            </Text>
+            <Text style={styles.authText}>{auth.user.email}</Text>
+
+            <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+              <Text style={styles.logoutButtonText}>Logout</Text>
+            </TouchableOpacity>
+          </>
         ) : (
           <Text style={styles.authText}>Nenhum usuário logado.</Text>
         )}
-
-        <View style={styles.authButtonsRow}>
-          {!token && (
-            <TouchableOpacity
-              style={[styles.smallButton, styles.secondaryButton]}
-              onPress={() => router.replace("/login")}
-            >
-              <Text style={styles.smallButtonText}>Ir para Login</Text>
-            </TouchableOpacity>
-          )}
-
-          {token && (
-            <TouchableOpacity
-              style={[styles.smallButton, styles.logoutButton]}
-              onPress={handleLogout}
-            >
-              <Text style={styles.smallButtonText}>Logout</Text>
-            </TouchableOpacity>
-          )}
-        </View>
       </View>
 
-      {/* Centro: título e descrição */}
-      <View style={styles.centerBox}>
+      {/* Conteúdo principal */}
+      <View style={styles.mainContent}>
         <Text style={styles.title}>AIUTODESK</Text>
         <Text style={styles.subtitle}>Bem-vindo ao app da equipe!</Text>
-      </View>
 
-      {/* Botões principais */}
-      <View style={styles.buttonsBox}>
-        <TouchableOpacity
-          style={styles.mainButton}
-          onPress={() => router.push("/sobre")}
-        >
-          <Text style={styles.mainButtonText}>Sobre o Projeto</Text>
+        <TouchableOpacity style={styles.primaryButton} onPress={goToSobre}>
+          <Text style={styles.primaryButtonText}>Sobre o Projeto</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.mainButton}
-          onPress={() => router.push("/equipe")}
-        >
-          <Text style={styles.mainButtonText}>Equipe</Text>
+        <TouchableOpacity style={styles.primaryButton} onPress={goToEquipe}>
+          <Text style={styles.primaryButtonText}>Equipe</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -79,84 +75,71 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 24,
-    paddingTop: 40,
-    backgroundColor: "#f5f5f5",
     flexGrow: 1,
+    backgroundColor: "#f5f5f5",
+    paddingVertical: 24,
+    paddingHorizontal: 16,
   },
-  authBox: {
-    backgroundColor: "#ffffff",
+  authCard: {
+    backgroundColor: "#f7e9ff",
     borderRadius: 12,
     padding: 16,
     marginBottom: 24,
-    borderWidth: 1,
-    borderColor: "#e5e7eb",
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
   },
   authTitle: {
-    fontWeight: "bold",
+    fontWeight: "600",
     marginBottom: 8,
-    fontSize: 14,
   },
   authText: {
     fontSize: 14,
-    color: "#444",
-  },
-  authStrong: {
-    fontWeight: "bold",
-  },
-  authEmail: {
-    fontSize: 13,
-    color: "#666",
-  },
-  authButtonsRow: {
-    flexDirection: "row",
-    marginTop: 12,
-    gap: 8,
-  },
-  smallButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 999,
-  },
-  secondaryButton: {
-    backgroundColor: "#3b82f6",
-  },
-  logoutButton: {
-    backgroundColor: "#ef4444",
-  },
-  smallButtonText: {
-    color: "#fff",
-    fontWeight: "600",
-    fontSize: 13,
-    textAlign: "center",
-  },
-  centerBox: {
-    alignItems: "center",
-    marginBottom: 24,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    letterSpacing: 1,
     marginBottom: 4,
   },
+  authBold: {
+    fontWeight: "600",
+  },
+  logoutButton: {
+    marginTop: 12,
+    alignSelf: "flex-start",
+    backgroundColor: "#ff4b4b",
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 999,
+  },
+  logoutButtonText: {
+    color: "#fff",
+    fontWeight: "600",
+  },
+  mainContent: {
+    alignItems: "center",
+    marginTop: 16,
+  },
+  title: {
+    fontSize: 26,
+    fontWeight: "800",
+    marginBottom: 8,
+  },
   subtitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: "#555",
+    marginBottom: 24,
+    textAlign: "center",
   },
-  buttonsBox: {
-    gap: 12,
-  },
-  mainButton: {
-    backgroundColor: "#7C3AED",
+  primaryButton: {
+    width: "100%",
+    backgroundColor: "#7b2cff",
     paddingVertical: 14,
     borderRadius: 999,
     alignItems: "center",
+    marginBottom: 12,
   },
-  mainButtonText: {
+  primaryButtonText: {
     color: "#fff",
     fontSize: 16,
     fontWeight: "600",
-    textTransform: "uppercase",
   },
 });
