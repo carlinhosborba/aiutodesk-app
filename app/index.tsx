@@ -1,14 +1,24 @@
+import { useAuthStore } from '@/store/useAuthStore';
 import { Redirect } from 'expo-router';
-import { useAuth } from '@/store/auth';
 
+/**
+ * INDEX REDIRECT
+ * Redireciona baseado no estado de autenticação
+ * Verifica a sessão ao carregar o app
+ */
 export default function IndexRedirect() {
-  const token = useAuth((state) => state.token);
+  const { isAuthenticated, isLoading } = useAuthStore();
 
-  // Se não estiver logado, manda para /login
-  if (!token) {
+  // Enquanto verifica autenticação, não mostra nada
+  if (isLoading) {
+    return null;
+  }
+
+  // Se não estiver autenticado, vai para login
+  if (!isAuthenticated) {
     return <Redirect href="/login" />;
   }
 
-  // Se estiver logado, manda para as tabs
+  // Se estiver autenticado, vai para as tabs
   return <Redirect href="/(tabs)" />;
 }

@@ -1,8 +1,8 @@
 {
   "expo": {
     "name": "aiutodesk-app",
-    "slug": "aiutodesk-app",
-    "owner": "carlosborbab",
+    "slug": "mobile-aiuto",
+    "owner": "danielluna27",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -48,7 +48,7 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "34109ef3-436f-4eb0-ab0e-ea7388775fcc"
+        "projectId": "8dbec442-4c5c-4206-b892-6e8393885499"
       }
     },
     "runtimeVersion": {
