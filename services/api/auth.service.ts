@@ -6,11 +6,11 @@
  */
 
 import {
-    AuthenticatedUser,
-    LoginRequestDto,
-    LoginResponseDto,
-    SignupRequestDto,
-    SignupResponseDto,
+  AuthenticatedUser,
+  LoginRequestDto,
+  LoginResponseDto,
+  SignupRequestDto,
+  SignupResponseDto,
 } from '../../types';
 import { tokenStorage } from '../storage/token-storage';
 import AxiosClient from './axios-client';
@@ -34,10 +34,10 @@ class AuthService {
       console.log('[AuthService] ✅ Login response:', response.status);
 
       // Armazena o token localmente
-      if (response.data.accessToken) {
-        await tokenStorage.setToken(response.data.accessToken);
-        console.log('[AuthService] ✅ Token armazenado');
-      }
+        if (response.data.access_token) {
+          await tokenStorage.setToken(response.data.access_token);
+          console.log('[AuthService] ✅ Token armazenado');
+        }
 
       return response.data;
     } catch (error: any) {
