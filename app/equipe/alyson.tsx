@@ -14,15 +14,15 @@ export default function AlysonScreen() {
         <Card.Content>
           <Text style={styles.sectionTitle}>Sobre mim</Text>
           <Text style={styles.text}>
-            Alyson é integrante da equipe AIUTODESK, colaborando no desenvolvimento 
+            Sou um integrante da equipe AIUTODESK, colaborando no desenvolvimento 
             do aplicativo, tomada de decisões técnicas e suporte às funcionalidades 
             ligadas ao front-end e à integração com o back-end.
           </Text>
 
           <Text style={styles.sectionTitle}>Contato</Text>
-          <Text style={styles.text}>📧 E-mail: (e-mail do Alyson)</Text>
-          <Text style={styles.text}>🐙 GitHub: (GitHub do Alyson)</Text>
-          <Text style={styles.text}>💼 LinkedIn: (LinkedIn do Alyson)</Text>
+          <Text style={styles.text}>📧 E-mail: (alysonrafael2005@gmail.com)</Text>
+          <Text style={styles.text}>🐙 GitHub: (https://github.com/AlysonLima1)</Text>
+          <Text style={styles.text}>💼 LinkedIn: (https://www.linkedin.com/in/alyson-lima-a556522a0/)</Text>
         </Card.Content>
 
         <Card.Actions style={styles.actions}>

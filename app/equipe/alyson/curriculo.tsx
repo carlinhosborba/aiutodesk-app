@@ -15,36 +15,32 @@ export default function CurriculoAlyson() {
         <Card.Content>
           <Text style={styles.sectionTitle}>Experiência Profissional</Text>
 
-          <Text style={styles.itemTitle}>Função / Cargo 1</Text>
-          <Text style={styles.subtitle}>Período • Local (preencher)</Text>
+          <Text style={styles.itemTitle}> Estagiario em Tecnico de Informatica </Text>
+          <Text style={styles.subtitle}>7 Meses de Atuação • Auto Norte Distribuidora de Peças Automotivas (preencher)</Text>
           <Text style={styles.text}>
-            Descrever aqui, de forma resumida, as responsabilidades e atividades 
-            realizadas nessa experiência profissional.
-          </Text>
+            Como atividades desenvolvidas durante meu estágio como Técnico de Informática, destaco:
+            Suporte aos usuários na resolução de problemas de hardware e software.
+            Instalação e configuração de computadores, impressoras e periféricos.
+            Atualização e formatação de sistemas operacionais.
+            Auxílio na manutenção preventiva e corretiva de equipamentos.
+            Configuração de redes básicas (Wi-Fi, cabo, compartilhamento de pastas).
+            Monitoramento e organização de chamados técnicos.
+            Apoio na instalação de programas e ferramentas corporativas.
+            Documentação de processos e suporte ao setor de TI em tarefas gerais.
 
-          <Divider style={styles.divider} />
-
-          <Text style={styles.itemTitle}>Função / Cargo 2</Text>
-          <Text style={styles.subtitle}>Período • Local (preencher)</Text>
-          <Text style={styles.text}>
-            Outra experiência relevante que o Alyson quiser destacar no currículo.
           </Text>
 
           <Divider style={styles.divider} />
 
           <Text style={styles.sectionTitle}>Formação Acadêmica</Text>
-          <Text style={styles.itemTitle}>Curso 1 (preencher)</Text>
-          <Text style={styles.subtitle}>Instituição • Período</Text>
-
-          <Text style={styles.itemTitle}>Curso 2 (opcional)</Text>
-          <Text style={styles.subtitle}>Instituição • Período</Text>
+          <Text style={styles.itemTitle}>Sistemas para Internet (preencher)</Text>
+          <Text style={styles.subtitle}>Universidade Catolica de Pernambuco • Quarto Período</Text>
 
           <Divider style={styles.divider} />
 
           <Text style={styles.sectionTitle}>Tecnologias e Habilidades</Text>
-          <Text style={styles.text}>• Tecnologias que o Alyson domina</Text>
-          <Text style={styles.text}>• Linguagens, frameworks, banco de dados</Text>
-          <Text style={styles.text}>• Outras competências relevantes</Text>
+          <Text style={styles.text}>• Domino com certa perspicacia Java</Text>
+          
         </Card.Content>
 
         <Card.Actions style={styles.actions}>
