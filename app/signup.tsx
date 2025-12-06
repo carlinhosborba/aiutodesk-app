@@ -1,56 +1,36 @@
 import { AppButton } from '@/components/ui/AppButton';
 import { AppInput } from '@/components/ui/AppInput';
 import { useAuthStore } from '@/store/useAuthStore';
-import { useTenantStore } from '@/store/useTenantStore';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-    ActivityIndicator,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 export default function SignupScreen() {
   const router = useRouter();
   const { signup, isLoading, error, clearError } = useAuthStore();
-  const { availableTenants, fetchTenants, isLoading: tenantsLoading, error: tenantsError } =
-    useTenantStore();
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [selectedTenantId, setSelectedTenantId] = useState<string>('');
+  const [tenantId, setTenantId] = useState('');
   const [localError, setLocalError] = useState('');
-  const [showTenantPicker, setShowTenantPicker] = useState(false);
-
-  // Carregar tenants ao montar o componente
-  React.useEffect(() => {
-    loadTenants();
-  }, []);
-
-  const loadTenants = async () => {
-    try {
-      console.log('📦 Iniciando carregamento de tenants...');
-      await fetchTenants();
-      console.log('✅ Tenants carregados com sucesso');
-    } catch (err) {
-      console.error('❌ Erro ao carregar tenants:', err);
-      setLocalError('Erro ao carregar empresas. Tente novamente.');
-    }
-  };
 
   const handleSignup = async () => {
     setLocalError('');
     clearError();
 
     // Validações básicas
-    if (!name || !email || !password || !confirmPassword) {
+    if (!name || !email || !password || !confirmPassword || !tenantId) {
       setLocalError('Preencha todos os campos para continuar.');
       return;
     }
@@ -70,22 +50,17 @@ export default function SignupScreen() {
       return;
     }
 
-    if (!selectedTenantId) {
-      setLocalError('Selecione uma empresa para continuar.');
-      return;
-    }
-
     try {
       // Chama a ação de signup da store
       await signup({
         name,
         email: email.toLowerCase(),
         password,
-        tenantId: selectedTenantId,
+        tenantId, // Obrigatório
       });
 
       // Se conseguiu registrar, redireciona para login
-      // (não faz login automático conforme design da API)
+      setLocalError('');
       router.replace('/login');
     } catch (err) {
       const errorMessage =
@@ -95,9 +70,11 @@ export default function SignupScreen() {
       // Tratamento específico para erros comuns
       if (
         errorMessage.includes('409') ||
-        errorMessage.includes('already exists')
+        errorMessage.includes('already registered')
       ) {
         setLocalError('Este e-mail já está cadastrado.');
+      } else if (errorMessage.includes('404')) {
+        setLocalError('Empresa não encontrada. Verifique o ID.');
       } else if (errorMessage.includes('Network')) {
         setLocalError('Erro de conexão. Verifique sua internet.');
       } else {
@@ -115,9 +92,6 @@ export default function SignupScreen() {
   };
 
   const displayError = localError || error;
-  const selectedTenant = availableTenants.find(
-    (t) => t.id === selectedTenantId
-  );
 
   return (
     <KeyboardAvoidingView
@@ -170,87 +144,14 @@ export default function SignupScreen() {
             editable={!isLoading}
           />
 
-          {/* Seletor de Tenant */}
-          <View style={styles.tenantContainer}>
-            <Text style={styles.tenantLabel}>Empresa *</Text>
-            {tenantsLoading ? (
-              <View style={styles.tenantLoading}>
-                <ActivityIndicator size="small" color="#7B3AED" />
-                <Text style={styles.tenantLoadingText}>
-                  Carregando empresas...
-                </Text>
-              </View>
-            ) : tenantsError ? (
-              <View style={styles.tenantErrorContainer}>
-                <Text style={styles.tenantErrorText}>
-                  ❌ Erro ao carregar empresas: {tenantsError}
-                </Text>
-                <TouchableOpacity
-                  style={styles.tenantRetryButton}
-                  onPress={() => loadTenants()}
-                >
-                  <Text style={styles.tenantRetryText}>🔄 Tentar novamente</Text>
-                </TouchableOpacity>
-              </View>
-            ) : availableTenants.length === 0 ? (
-              <View style={styles.tenantErrorContainer}>
-                <Text style={styles.tenantErrorText}>
-                  Nenhuma empresa disponível. Contate o suporte.
-                </Text>
-              </View>
-            ) : (
-              <TouchableOpacity
-                style={[
-                  styles.tenantButton,
-                  !isLoading && styles.tenantButtonActive,
-                ]}
-                onPress={() =>
-                  !isLoading && setShowTenantPicker(!showTenantPicker)
-                }
-                disabled={isLoading}
-              >
-                <Text
-                  style={[
-                    styles.tenantButtonText,
-                    selectedTenantId && styles.tenantButtonTextSelected,
-                  ]}
-                >
-                  {selectedTenant?.name || 'Selecione uma empresa'}
-                </Text>
-              </TouchableOpacity>
-            )}
-
-            {/* Lista de Tenants */}
-            {showTenantPicker && availableTenants.length > 0 && (
-              <View style={styles.tenantList}>
-                {availableTenants.map((tenant) => (
-                  <TouchableOpacity
-                    key={tenant.id}
-                    style={[
-                      styles.tenantOption,
-                      selectedTenantId === tenant.id &&
-                        styles.tenantOptionSelected,
-                    ]}
-                    onPress={() => {
-                      console.log('👉 Selecionando tenant:', tenant.id, tenant.name);
-                      setSelectedTenantId(tenant.id);
-                      setShowTenantPicker(false);
-                    }}
-                  >
-                    <Text
-                      style={[
-                        styles.tenantOptionText,
-                        selectedTenantId === tenant.id &&
-                          styles.tenantOptionTextSelected,
-                      ]}
-                    >
-                      {tenant.name}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            )}
-          </View>
+          <AppInput
+            label="ID da Empresa (Tenant)"
+            placeholder="UUID da empresa"
+            value={tenantId}
+            onChangeText={setTenantId}
+            editable={!isLoading}
+            autoCapitalize="none"
+          />
 
           {displayError && (
             <View style={styles.errorContainer}>
@@ -261,7 +162,6 @@ export default function SignupScreen() {
           <AppButton
             title={isLoading ? 'Cadastrando...' : 'Cadastrar'}
             onPress={handleSignup}
-            disabled={isLoading || tenantsLoading}
           />
 
           {isLoading && (
@@ -320,121 +220,35 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     color: '#6B7280',
   },
-  tenantContainer: {
-    marginBottom: 16,
-  },
-  tenantLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 8,
-    color: '#374151',
-  },
-  tenantButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#D1D5DB',
-    backgroundColor: '#F9FAFB',
-    opacity: 0.6,
-  },
-  tenantButtonActive: {
-    opacity: 1,
-  },
-  tenantButtonText: {
-    fontSize: 14,
-    color: '#9CA3AF',
-  },
-  tenantButtonTextSelected: {
-    color: '#1F2937',
-  },
-  tenantLoading: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 12,
-  },
-  tenantLoadingText: {
-    fontSize: 14,
-    color: '#6B7280',
-    marginLeft: 8,
-  },
-  tenantErrorContainer: {
-    backgroundColor: '#FEE2E2',
-    borderRadius: 8,
-    padding: 12,
-    borderLeftWidth: 4,
-    borderLeftColor: '#DC2626',
-  },
-  tenantErrorText: {
-    color: '#B91C1C',
-    fontSize: 13,
-    fontWeight: '500',
-    marginBottom: 8,
-  },
-  tenantRetryButton: {
-    backgroundColor: '#DC2626',
-    borderRadius: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    alignSelf: 'flex-start',
-  },
-  tenantRetryText: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  tenantList: {
-    marginTop: 8,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 8,
-    backgroundColor: '#FFFFFF',
-    overflow: 'hidden',
-  },
-  tenantOption: {
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
-  },
-  tenantOptionSelected: {
-    backgroundColor: '#F3E8FF',
-  },
-  tenantOptionText: {
-    fontSize: 14,
-    color: '#6B7280',
-  },
-  tenantOptionTextSelected: {
-    color: '#7B3AED',
-    fontWeight: '600',
-  },
   errorContainer: {
     backgroundColor: '#FEE2E2',
     borderLeftWidth: 4,
     borderLeftColor: '#DC2626',
-    borderRadius: 8,
-    padding: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    borderRadius: 6,
     marginBottom: 16,
   },
   errorText: {
-    color: '#B91C1C',
-    fontSize: 14,
+    fontSize: 13,
+    color: '#991B1B',
     fontWeight: '500',
   },
   loaderContainer: {
-    position: 'absolute',
-    bottom: 24,
-    right: 24,
+    marginTop: 12,
+    marginBottom: 12,
+    alignItems: 'center',
   },
   link: {
-    marginTop: 16,
-    textAlign: 'center',
+    fontSize: 14,
     color: '#7B3AED',
-    fontSize: 15,
-    fontWeight: '500',
+    textAlign: 'center',
+    marginTop: 16,
+    fontWeight: '600',
+    textDecorationLine: 'underline',
   },
   linkDisabled: {
-    opacity: 0.5,
+    color: '#D1D5DB',
+    textDecorationLine: 'none',
   },
 });
