@@ -26,7 +26,6 @@ export interface AuthStore {
   login: (credentials: LoginRequestDto) => Promise<void>;
   signup: (data: SignupRequestDto) => Promise<void>;
   logout: () => Promise<void>;
-  fetchMe: () => Promise<void>;
   checkAuthStatus: () => Promise<void>;
   clearError: () => void;
 }
@@ -44,7 +43,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
    * Fluxo: 1. Validar entrada
    *        2. Chamar /auth/login para obter token
    *        3. Armazenar token
-   *        4. Chamar fetchMe() para obter dados do usuário
+   *        4. Armazenar dados do usuário
    */
   login: async (credentials: LoginRequestDto) => {
     set({ isLoading: true, error: null });
@@ -61,13 +60,9 @@ export const useAuthStore = create<AuthStore>((set) => ({
       const loginResponse = await authService.login(credentials);
       console.log('[AuthStore] ✅ Token recebido');
 
-      // Busca os dados do usuário autenticado
-      const user = await authService.fetchMe();
-      console.log('[AuthStore] ✅ Dados do usuário carregados');
-
       set({
-        user,
-        token: loginResponse.accessToken,
+        user: loginResponse.user,
+        token: loginResponse.access_token,
         isAuthenticated: true,
         isLoading: false,
       });
@@ -100,21 +95,35 @@ export const useAuthStore = create<AuthStore>((set) => ({
 
   /**
    * Registra um novo usuário
+   * NÃO faz auto-login - apenas cria a conta
+   * Usuário deve fazer login depois
    */
   signup: async (data: SignupRequestDto) => {
     set({ isLoading: true, error: null });
 
     try {
       const newUser = await authService.signup(data);
+      console.log('[AuthStore] ✅ Usuário criado com sucesso');
 
       set({
-        user: newUser,
         isLoading: false,
         error: null,
       });
-    } catch (error) {
-      const errorMessage =
+    } catch (error: any) {
+      const status = error.response?.status;
+      let errorMessage =
         error instanceof Error ? error.message : 'Erro ao registrar';
+
+      // Mensagens de erro específicas
+      if (status === 409 || errorMessage.includes('already registered')) {
+        errorMessage = 'Este e-mail já está cadastrado';
+      } else if (status === 404) {
+        errorMessage = 'Empresa não encontrada. Verifique o ID.';
+      } else if (status === 400) {
+        errorMessage = 'Dados inválidos. Verifique os campos.';
+      }
+
+      console.error('[AuthStore] ❌ Erro no signup:', errorMessage);
 
       set({
         isLoading: false,
@@ -161,7 +170,24 @@ export const useAuthStore = create<AuthStore>((set) => ({
     set({ isLoading: true, error: null });
 
     try {
-      const user = await authService.fetchMe();
+      // Extrai o userId do token armazenado
+      const storedToken = await authService.getStoredToken();
+      if (!storedToken) {
+        throw new Error('Nenhum token encontrado');
+      }
+
+      const base64Url = storedToken.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+      const payload = JSON.parse(jsonPayload);
+      const userId = payload.sub;
+
+      const user = await authService.fetchMe(userId);
 
       set({
         user,
@@ -185,6 +211,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
   /**
    * Verifica o status de autenticação no app startup
    * Se houver um token armazenado, tenta restaurar a sessão
+   * Nota: Não carrega os dados do usuário novamente, apenas valida o token
    */
   checkAuthStatus: async () => {
     set({ isLoading: true, error: null });
@@ -193,26 +220,12 @@ export const useAuthStore = create<AuthStore>((set) => ({
       const storedToken = await authService.getStoredToken();
 
       if (storedToken) {
-        set({ token: storedToken });
-
-        // Tenta buscar os dados do usuário
-        try {
-          const user = await authService.fetchMe();
-          set({
-            user,
-            isAuthenticated: true,
-            isLoading: false,
-          });
-        } catch (error) {
-          // Se falhar (token expirado), remove o token
-          await authService.logout();
-          set({
-            token: null,
-            user: null,
-            isAuthenticated: false,
-            isLoading: false,
-          });
-        }
+        set({ 
+          token: storedToken,
+          isAuthenticated: true,
+          isLoading: false 
+        });
+        console.log('[AuthStore] ✅ Sessão restaurada com token armazenado');
       } else {
         set({
           isAuthenticated: false,

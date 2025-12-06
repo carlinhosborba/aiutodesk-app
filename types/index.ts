@@ -53,10 +53,11 @@ export interface LoginRequestDto {
 
 /**
  * AUTH DTO - LOGIN RESPONSE
- * Resposta da API ao fazer login (apenas token, sem dados do usuário)
+ * Resposta da API ao fazer login (token + dados do usuário)
  */
 export interface LoginResponseDto {
-  accessToken: string;
+  access_token: string;
+  user: AuthenticatedUser;
 }
 
 /**

@@ -57,31 +57,56 @@ class AuthService {
   /**
    * Registra um novo usuário
    * POST /auth/signup
+   * Backend espera: { name, email, password, tenantId }
+   * Retorna: { message, user } - SEM token (precisa fazer login depois)
    */
   async signup(userData: SignupRequestDto): Promise<SignupResponseDto> {
     try {
-      const response = await this.axios.post<SignupResponseDto>(
+      console.log('[AuthService] POST /auth/signup com dados:', {
+        name: userData.name,
+        email: userData.email,
+        tenantId: userData.tenantId,
+      });
+
+      const response = await this.axios.post<{ message: string; user: SignupResponseDto }>(
         '/auth/signup',
-        userData
+        {
+          name: userData.name,
+          email: userData.email,
+          password: userData.password,
+          tenantId: userData.tenantId, // Obrigatório
+        }
       );
 
-      return response.data;
-    } catch (error) {
-      console.error('[AuthService] Erro no signup:', error);
+      console.log('[AuthService] ✅ Usuário criado com sucesso');
+      console.log('[AuthService] Response:', response.data);
+      
+      // Retorna apenas o user, já que o message é só confirmação
+      return response.data.user;
+    } catch (error: any) {
+      const status = error.response?.status;
+      const data = error.response?.data;
+      
+      console.error('[AuthService] ❌ Erro no signup:', {
+        status,
+        message: error.message,
+        data,
+      });
       throw error;
     }
   }
 
   /**
    * Obtém os dados do usuário autenticado
-   * GET /auth/me
-   * Backend retorna: { user: {...} }
+   * GET /users/:id
+   * Requer o userId (pode vir da decodificação do JWT)
    */
-  async fetchMe(): Promise<AuthenticatedUser> {
+  async fetchMe(userId: number): Promise<AuthenticatedUser> {
     try {
-      const response = await this.axios.get<{ user: AuthenticatedUser }>('/auth/me');
+      console.log('[AuthService] GET /users/:id');
+      const response = await this.axios.get<AuthenticatedUser>(`/users/${userId}`);
       console.log('[AuthService] ✅ Dados do usuário obtidos');
-      return response.data.user;
+      return response.data;
     } catch (error: any) {
       const status = error.response?.status;
       if (status === 401) {
