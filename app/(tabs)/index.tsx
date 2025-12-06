@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
-import { useAuth } from "@/store/auth";
+import { useAuthStore } from "@/store/useAuthStore";
 import { useRouter } from "expo-router";
 import { AppButton } from "@/components/ui/AppButton";
 
@@ -8,8 +8,8 @@ import { chamadosFake } from "@/constants/chamados";
 
 export default function DashboardScreen() {
   const router = useRouter();
-  const usuario = useAuth((state) => state.user);
-  const logout = useAuth((state) => state.logout);
+  const usuario = useAuthStore((state) => state.user);
+  const logout = useAuthStore((state) => state.logout);
 
   // Novo logout com redirecionamento:
   function handleLogout() {
