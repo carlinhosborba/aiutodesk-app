@@ -1,28 +1,38 @@
-import { ScrollView, StyleSheet } from 'react-native';
 import { Link } from 'expo-router';
-import { Card, Text, Avatar, Button } from 'react-native-paper';
+import { ScrollView, StyleSheet } from 'react-native';
+import { Avatar, Button, Card, Text } from 'react-native-paper';
 
 export default function DanielLunaScreen() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Card style={styles.card}>
         <Card.Title
-          title="Daniel Luna"
-          subtitle="Integrante da equipe AIUTODESK"
+          title="Daniel Luna Paiva"
+          subtitle="Frontend Developer | AIUTODESK"
           left={(props) => <Avatar.Text {...props} label="DL" />}
         />
         <Card.Content>
           <Text style={styles.sectionTitle}>Sobre mim</Text>
           <Text style={styles.text}>
-            Daniel Luna é integrante da equipe AIUTODESK, contribuindo na 
-            construção das telas, testes e validação das funcionalidades do app,
-            além de apoiar nas decisões técnicas do projeto.
+            Frontend Developer com expertise em Angular, React, JavaScript e TypeScript. 
+            Trabalho na Avanade como Sr. Associate e contribuo no projeto AIUTODESK, 
+            desenvolvendo interfaces intuitivas e soluções web de alta performance.
+          </Text>
+
+          <Text style={styles.sectionTitle}>Tecnologias</Text>
+          <Text style={styles.text}>
+            Angular • React • JavaScript • TypeScript • Git • Scrum • Web • SEO
+          </Text>
+
+          <Text style={styles.sectionTitle}>Formação</Text>
+          <Text style={styles.text}>
+            CST em Sistemas para Internet (UNICAP, 2024-2026) • 
+            Técnico em Multimídia (ETE Ginásio Pernambucano, 2021-2023)
           </Text>
 
           <Text style={styles.sectionTitle}>Contato</Text>
-          <Text style={styles.text}>📧 E-mail: (e-mail do Daniel)</Text>
-          <Text style={styles.text}>🐙 GitHub: (GitHub do Daniel)</Text>
-          <Text style={styles.text}>💼 LinkedIn: (LinkedIn do Daniel)</Text>
+          <Text style={styles.text}>📧 daniel.00008353754@unicap.br</Text>
+          <Text style={styles.text}>🔗 linkedin.com/in/daniel-luna27</Text>
         </Card.Content>
 
         <Card.Actions style={styles.actions}>
