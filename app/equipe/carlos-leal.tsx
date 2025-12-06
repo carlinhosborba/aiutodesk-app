@@ -20,9 +20,9 @@ export default function CarlosLealScreen() {
           </Text>
 
           <Text style={styles.sectionTitle}>Contato</Text>
-          <Text style={styles.text}>📧 E-mail: (e-mail do Carlos Leal)</Text>
-          <Text style={styles.text}>🐙 GitHub: (GitHub do Carlos Leal)</Text>
-          <Text style={styles.text}>💼 LinkedIn: (LinkedIn do Carlos Leal)</Text>
+          <Text style={styles.text}>📧 E-mail: carlos.lneeto@gmail.com</Text>
+          <Text style={styles.text}>🐙 GitHub: https://github.com/carloslneeto</Text>
+          <Text style={styles.text}>💼 LinkedIn: https://www.linkedin.com/in/carlos-leal-30790a236?utm_source=share_via&utm_content=profile&utm_medium=member_ios</Text>
         </Card.Content>
 
         <Card.Actions style={styles.actions}>
